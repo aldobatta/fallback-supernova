@@ -78,6 +78,7 @@ class HPX():
         return self.n_hpx(r_up) - self.np_mass(r_up)
 
     def mshell(self,r_up):
+        # Mass of the shell in that deltaVolume
         return self.M_int(r_up) - self.M_int(self.r_low)
 
 
@@ -116,7 +117,18 @@ class HPX():
         # AVG - Why is this done twice? No need to define npo 3 lines above?
         npo = 12*np_f**2
 
-        # AVG - CHECKPOINT
+        #  healpy.query_disc(nsideint,vecfloat,radiusfloat)
+        # Returns pixels whose centers lie within the disk defined by vec and radius (in radians) (if inclusive is False), or which overlap with this disk (if inclusive is True).
+        # Parameters
+        #     nsideint
+        #         The nside of the Healpix map.
+        #     vecfloat, sequence of 3 elements
+        #         The coordinates of unit vector defining the disk center.
+        #     radiusfloat
+        #         The radius (in radians) of the disk
+        #     Returns
+        # ipixint, array
+        #     The pixels which lie within the given disk.
         nlist = hp.query_disc(np_f,(0.,0.,0.),np.pi)
 
         shellx = []
@@ -124,6 +136,7 @@ class HPX():
         shellz = []
 
         for i in nlist:
+            # https://healpy.readthedocs.io/en/latest/generated/healpy.pixelfunc.pix2vec.html
             points = hp.pix2vec(np_f,i,nest=True)
         #     print points
 
@@ -147,12 +160,13 @@ class HPX():
         # print dist_points/Ro
         # print '----------------------------------'
 
+        # Calculate density of the whole shell
         rhoshell = 3.*self.P_mass*npo/(4*np.pi*(r_upf**3 - self.r_low**3))
 
         return shellx, shelly, shellz, r_upf, npo, rshell, rhoshell, self.mshell(r_upf)
 
 
-    ## Rotate shells and give them gaussian distribution on radius
+    ## Rotate shells
 
     def rotate_shell(self,x_pix,y_pix,z_pix):
         """
@@ -202,29 +216,8 @@ class HPX():
 
         return x_rot, y_rot, z_rot
 
-    # Old version of gaussian distribution
-
-    def gaussDist(self,Npoints,mu,sigma,Nsigma=3.0):
-        x_min = -Nsigma*sigma
-        x_max = Nsigma*sigma
-
-        rshift = np.ones(Npoints)
-
-        i = 0
-        while (i<Npoints):
-            xran = np.random.uniform(x_min,2*x_max + mu)
-            yran = np.random.uniform(0,1.0/(sigma*np.sqrt(2*np.pi)))
-
-            gauss = (1.0/(sigma*np.sqrt(2*np.pi)))*np.exp(-(xran-mu)**2 / (2*sigma**2))
-
-            if (yran<gauss):
-                rshift[i] = xran
-                i = i + 1
-
-        return rshift
-
+    # Give particles gaussian distribution on radius
     # Improved version of gaussian distribution (using arrays)
-
     def gaussDist2(self,Npoints,mu,sigma,Nsigma=3.0):
         """
         Obtains a gaussian distribution of Npoints around mu = 1.0 with a gaussian width of Nsigma.
@@ -283,7 +276,7 @@ class HPX():
 
         return rshift[:Npoints]
 
-
+        # Builds all the shells and put them on top of each other
 def getSPHParticles(r_low,P_mass,M_int,rho_int,u_int,Rstar,rotshell,gaussRad,Nsigma,dr_sigma,debug=False):
 
     hpx = HPX(r_low,P_mass,M_int)
@@ -378,6 +371,7 @@ def getSPHParticles(r_low,P_mass,M_int,rho_int,u_int,Rstar,rotshell,gaussRad,Nsi
     print 'with a total of Np =',len(xpos),' particles'
     print '============================================='
 
+    # AVG: add printing comparison with initial quantities when debug = True
     if debug:
         return xpos,ypos,zpos,mp,rsh,Msh,rhosh,np_shell
     else:

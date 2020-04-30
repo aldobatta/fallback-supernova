@@ -347,6 +347,7 @@ r_low = r_min
 # ============================================================
 # Obtain positions and masses of SPH particles matching rho(r)
 # AVG: Can we use this twice to make 2 stars?
+# AVG: add a debug flag in the beginning
 xpos,ypos,zpos,mp = sph.getSPHParticles(r_low,P_mass,M_int,rho_int,u_int,R_star,rotshell,gaussRad,Nsigma,dr_sigma,debug=False)
 
 
