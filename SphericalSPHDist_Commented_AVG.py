@@ -104,7 +104,7 @@ class HPX():
         rhoshell -> average density in the shell
         mshell(r_upf) -> mass contained in the shell (and in the npo particles)
         """
-        print 'this is r_low... ',self.r_low/c.rsun
+        # print 'this is r_low... ',self.r_low/c.rsun
         # bisect.bisect(a, x, lo=0, hi=len(a))
         r_upf = bisect(self.find_n,self.r_low,20*(self.r_low))
         np_f = self.np_mass(r_upf)

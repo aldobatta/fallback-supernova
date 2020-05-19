@@ -20,8 +20,9 @@ import healpy as hp
 import time
 import matplotlib.pyplot as pl
 
-import NestedPolyStar as nps  # Used to obtain polytropic stars
-import SphericalSPHDist as sph # Used to build spherical particle distributions
+# import SphericalSPHDist as sph # Used to build spherical particle distributions
+import SphericalSPHDist_Commented_AVG as sph # Used to build spherical particle distributions
+import BinaryBHOrbit_Commented_AVG as bhb
 
 # Time the execution of the program
 start = time.time()
@@ -65,7 +66,7 @@ c = Constants()
 # ====================================================#
 # Define number of SPH particles
 
-N_p = int(1e6)  # number of SPH particles
+N_p = int(5e5)  # number of SPH particles
 
 Npstring = str(N_p)
 N_k = len(Npstring) - 4
@@ -112,7 +113,7 @@ else:
 
     Readprofile = True
     Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-    Profilename = '../35OC@presn'
+    Profilename = './stellarProfiles/35OC@presn'
 
     M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=True)
 
@@ -161,7 +162,6 @@ if RigidbodyRot:
 Binary = True    # Creates a Binary (one of them will be an SPH Star)
 Tidallock = True  # Only works when Binary is On
 if Binary:
-    import BinaryBHOrbit as bhb
 
     addStar = True  # Adds a Star particle as companion         /Single star particle; i.e. similar to a BH
     addBH = False   # Adds a BH (sink) particle as companion

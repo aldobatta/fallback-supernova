@@ -1,0 +1,22 @@
+Channel II: Time post-CEE to first SN
+
+double-core leading to BBH?
+
+Check out :
+	- bhb.ICs function from ```import BinaryBHOrbit as bhb```
+	- sph.getSPHParticles (this is the thing that uses healpix; also, it is where sometimes it goes wrong according to Sophie. Bad Aldo.)
+	- sph.get_particle_properties
+
+# AVG: Check what healpix is
+
+Run icGadget_SNBinary.py, checkout it makes sense, make some plots.
+
+|
+Shall we use polytropes or stellar profiles?
+
+
+Homework from Sophie:
+- Read and understand `SphericalSPHDist.py`
+- Change class c. to something more readably
+- Change Collapsar name function
+- Push shit to github
