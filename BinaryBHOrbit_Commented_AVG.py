@@ -280,3 +280,30 @@ class ICs():
             pos_vel_array += k1/6. + k2/3. + k3/3. + k4/6.
 
         return result
+    
+def getBinary2(m1,m2,a,e):
+
+    mt = m1 + m2
+    mu = m1*m2/mt
+    SemimayorAx = a/(1.-e)
+    P = np.sqrt((2*np.pi)**2 * SemimayorAx**3 / (G*mt))
+    Jspec = mu*np.sqrt(G*mt*SemimayorAx*(1-e**2))
+
+    # Primary's distance to perihelium f primary
+    a1 = (1 - e)*SemimayorAx/(1+m1/m2)
+
+    # positions
+    x1 = a1
+    y1 = 0.
+
+    x2 = -(m1/m2)*x1
+    y2 = -(m1/m2)*y1
+
+    #velocities
+    vx1 = 0.0
+    vy1 = Jspec/(a1*m1*(1+ m1/m2))
+
+    vx2 = -(m1/m2)*vx1
+    vy2 = -(m1/m2)*vy1
+
+    return np.array([x1,y1,vx1,vy1,x2,y2,vx2,vy2]),P        
