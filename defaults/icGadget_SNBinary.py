@@ -112,7 +112,7 @@ else:
 
     Readprofile = True
     Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-    Profilename = '../35OC@presn'
+    Profilename = '../stellarprofiles/35OC@presn'
 
     M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=True)
 
