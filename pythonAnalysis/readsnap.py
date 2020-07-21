@@ -18,6 +18,7 @@ def readsnap(sdir,snum,ptype,
 
     fname,fname_base,fname_ext = check_if_filename_exists(sdir,snum,\
         snapshot_name=snapshot_name,extension=extension,four_char=four_char)
+    print "This is the filename",fname
     if(fname=='NULL'): return {'k':-1}
     if(loud==1): print( 'loading file : '+fname)
 
@@ -162,7 +163,9 @@ def readsnap(sdir,snum,ptype,
     if (ptype==0):
         return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'u':ugas,'rho':rho,'h':hsml,'ne':nume,'nh':numh,'sfr':sfr,'z':metal};
     if (ptype==4):
-        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'z':metal,'age':stellage}
+        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids}       
+# Alejandro: removed metallicity and stellarage... bad hack?    
+#         return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'z':metal,'age':stellage}
     if (ptype==5) and (skip_bh==0):
         return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'mbh':bhmass,'mdot':bhmdot}
     return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids}
