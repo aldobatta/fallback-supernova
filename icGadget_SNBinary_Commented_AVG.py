@@ -20,7 +20,6 @@ import healpy as hp
 import time
 import matplotlib.pyplot as pl
 
-# import SphericalSPHDist as sph # Used to build spherical particle distributions
 import SphericalSPHDist_Commented_AVG as sph # Used to build spherical particle distributions
 import BinaryBHOrbit_Commented_AVG as bhb
 
@@ -53,7 +52,31 @@ class Constants():
         return None
 
 c = Constants()
+# AVG - 07/04/20 - 'c' should be called 'class' so we get class.c instead of c.c for speed of light
 
+# ====================================================#
+# Define Filename
+Filename = 'NS_HE16C_SNf_0_25_a_1_5.hdf5'
+
+# ====================================================#
+# Initial conditions 
+M_c = 1.33*c.msun # Define companion's mass (in the case of a non-stellar companion)
+a = 1.5*c.rsun # orbital separation
+e = 0.0         # eccentricity
+
+# BH inside star --------------------
+Collapsar = True  # Creates a BH surrounded by an envelope using a Stellar profile
+mBH = 1*c.msun  # Define initial BH mass (removed from the stellar profile)
+
+# SN explosion (and radial velocities) --------------------
+SNexplosion = True
+SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
+SNE_frac = 0.25    # explosion energy in terms of binding energy of the star
+
+M_exp = 0.1*c.msun # Innermost mass where explosion energy is deposited
+
+
+# ==========================================================#
 # ====================================================#
 #                                                     #
 #   Define general properties of the simulation,      #
@@ -66,97 +89,53 @@ c = Constants()
 # ====================================================#
 # Define number of SPH particles
 
-N_p = int(5e5)  # number of SPH particles
+N_p = int(1e6)  # number of SPH particles
 
 Npstring = str(N_p)
 N_k = len(Npstring) - 4
 N_p_code = Npstring[0]+'0'*N_k+'k'  # used for naming the file
 
-
-#==========================================================#
-# Define what kind of star we want to map with SPH particles
-#
-# if MakePolytrope = True:
-#   the user needs to define M_star and R_star for the code
-#   to create a polytropic Star (using Lane-Emden).
-#   And specify is a Nested polytrope is wanted or not
-#
-# if MakePolytrope = False:
-#   the user needs to specify what kind of stellar profile
-#   will be read and its name.
-#   Also define R_out which defines how far out we wil map
-#   with SPH particles (low resolution needs R_out < R_star)
-#==========================================================#
-
-MakePolytrope = False
-NestedPoly = False
-
-if MakePolytrope:
-    n1 = 1.5        # Polytropic index of the star
-    M_star = 28*c.msun # Mass of the polytropic star
-    R_star = 0.7*c.rsun # Radius of the polytropic star
-
-    if NestedPoly:
-
-        n2 = 3.0 # Envelope's Polytropic index (results in R_core ~ 0.3 c.rsun)
-        xi_core = 0.7895
-
-        # This polytrope creates a core with the "same" size as a 25 Rsun, 1 Msun star (MESA)
-        # n2 = 2.135 # Envelope's Polytropic index (results in R_core ~ 0.02 c.rsun)
-        # xi_core = 0.84
-
-        M_core = 0.3*c.msun # Core's mass
-else:
-
 # -----------------------------------------------------
 # Define stellar profile to be read, M_star and R_star
+# AVG - 07/04/2020 - I deleted options to make polytropes
+# Readprofile = True
+# Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
+# Profilename = '../35OC@presn'
+Readprofile = True
+Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
+Profilename = './stellarProfiles/HE16C@presn'
 
-    Readprofile = True
-    Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-    Profilename = './stellarProfiles/35OC@presn'
+M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=True)
 
-    M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=True)
+MapEntireStar = False   # AVG - 07/04/2020 - If true, cut off outer radius if the density is too low on the outer particles
+factor_to_cut = 1.0 # Default is 1.0, i.e. all the radius
+R_out_to_cut = factor_to_cut*c.rsun
 
-    MapEntireStar = False
+if MapEntireStar:
+    M_star = M[-1]  # Use entire star for simulation
+    R_star = r[-1]  # Use entire star for simulation
+    R_out = R_star
+    out_id = len(r) - 1
 
-    if MapEntireStar:
-        M_star = M[-1]  # Use entire star for simulation
-        R_star = r[-1]  # Use entire star for simulation
-        R_out = R_star
-        out_id = len(r) - 1
-
-    else:
-        R_out = 0.5*c.rsun  # this will be used as the outermost radius of the star
-        out_id = sph.find_nearest(r,R_out)
-        M_star = M[out_id]
-        R_star = r[out_id]
+else:
+    R_out = R_out_to_cut  # this will be used as the outermost radius of the star
+    out_id = sph.find_nearest(r,R_out)
+    M_star = M[out_id]
+    R_star = r[out_id]
 
 
 # ======================================================#
 # Decide type of simulation
 # ======================================================#
-
-# BH inside star --------------------
-Collapsar = True  # Creates a BH surrounded by an envelope using a Stellar profile
-if Collapsar:
-    mBH = 3*c.msun  # Define initial BH mass (removed from the stellar profile)
-
-# SN explosion (and radial velocities) --------------------
-SNexplosion = True
-SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
 if SNexplosion:
-    SNEnergy = 5e51    # explosion energy in ergs (only used if not defined by SNE_frac)
-    SNE_frac = 0.1    # explosion energy in terms of binding energy of the star
-    M_exp = 1.0*c.msun # Innermost mass where explosion energy is deposited
     if SNType == 'Lovegrove':
          M_exp = 0.5*c.msun # Innermost mass lost in neutrinos
 
 # Stellar Rotation --------------------
 RigidbodyRot = True    # Assigns constant angular velocity to particles in SPH star
 if RigidbodyRot:
-    #Omega_star = 2*np.pi / (100.0*c.day)  # define constant angular velocity
-    #Omega_star = np.sqrt(c.G*(M_star+15.0)*c.msun/(2.28*c.rsun)**3)   # SS messing up AA's code
     Omega_star = 0.0 * np.sqrt(c.G*M_star/R_star**3)
+    # AVG - 07/04/20 - Is Omega_star purposedly set to zero? Delete previously commented lines? 
     
 # Binary --------------------
 Binary = True    # Creates a Binary (one of them will be an SPH Star)
@@ -165,30 +144,20 @@ if Binary:
 
     addStar = True  # Adds a Star particle as companion         /Single star particle; i.e. similar to a BH
     addBH = False   # Adds a BH (sink) particle as companion
-    M_c = 15*c.msun # Define companion's mass
-
+    
     #=====================
     #Binary properties
     m1 = M_star     # mass of SPH star
     m2 = M_c        # companion's mass
-    a = 3.8*c.rsun # orbital separation
-    e = 0.0         # eccentricity
-
-    #===========================
-    #3rd body trajectory (not used but must be defined)
-    # AVG: anotate if it is specifically for triples, which probably is
-    m3 = M_star
-    r3 = 800 * c.rsun       # distance to binary's CM
-    rperi = 100 * c.rsun    # desired perihelium distance
-    e3 = 1                  # eccentricity
 
     #=====================
     # Load class to create initial conditions and evolve them
-    bhb_star= bhb.ICs(m1,m2,m3) # AVG: anotate if it is specifically for triples, which probably is
+    # bhb_star= bhb.ICs(m1,m2,m3) # AVG: anotate if it is specifically for triples, which probably is
 
     #=====================
     # Get Period and binary orbit
-    orb,Period = bhb_star.get_IC(m1,m2,a,e,m3,r3,rperi,e3)
+    # orb,Period = bhb_star.get_IC(m1,m2,a,e,m3,r3,rperi,e3)
+    orb,Period = bhb.getBinary2(m1,m2,a,e)
 
     Omega_orb = 2*np.pi / Period  # Orbital angular velocity
 
@@ -216,11 +185,12 @@ else:
     vSPH = [0,0,0]
 
 
-
+# AVG - 07/04/20 - CHECKPOINT
 # ======================================================#
 # Define Units (if scale_to_units = False) units are CGS)
 # ======================================================#
 
+# AVG - 17/04/20 - Making code units
 scale_to_units = True
 DistUnit = c.rsun
 MassUnit = c.msun
@@ -229,11 +199,12 @@ DensUnit = MassUnit/DistUnit**3
 VelUnit = DistUnit/TimeUnit
 E_perMassUnit = VelUnit**2
 P_Unit = E_perMassUnit*DensUnit
+sigFigsToPrint = 4
 
 if scale_to_units:
     print '\n-------------------------------------------'
-    print 'Scaling distances by ', round(DistUnit,4), ' cm'
-    print 'Scaling masses by ', round(MassUnit,4), ' g\n'
+    print 'Scaling distances by ', round(DistUnit,sigFigsToPrint), ' cm'
+    print 'Scaling masses by ', round(MassUnit,sigFigsToPrint), ' g\n'
     print 'G = 1'
 else:
     print '\n-------------------------------------------'
@@ -257,66 +228,16 @@ dr_sigma = 0.1      # 1 sigma of gaussian Dist will be within 0.1 of shell's wid
 Nsigma = 3.0        # Random Gaussian distribution up to 3 Sigma
 
 # ====================================================#
-# Define Filename
-
-# Filename = 'Star_Binary_'+N_p_code+'.hdf5'
-if SNexplosion:
-    explosion = SNType
-else:
-    explosion = ''
-    
-# Name file
-if Binary:
-    Filename = 'SNBinary_'+N_p_code+explosion+'.hdf5'
-    Filename = 'C_5_vhr10.hdf5'
-else:
-    Filename = 'Star_collapse_'+N_p_code+explosion+'.hdf5'
-# print ''
-print '================================================================'
-print 'Creating initial conditions with roughly '+str(N_p)+' particles'
-# print 'in file '+Filename
-print '================================================================'
-
-# ==========================================================#
-# ====================================================#
 #  Here we call the functions (actual program)
 # ====================================================#
-# ==========================================================#
-
 # ====================================================#
-#  First we build a Polytropic star if needed
 
-if MakePolytrope:
+dat = Table([r,rho,u,P,M],names=('r', 'rho', 'u', 'P', 'M'))
+ascii.write(dat,'StarProfile_cgs.dat')
 
-    if NestedPoly:
-
-        r1,rho1,M1,K1,r2,rho2,M2,K2 = nps.Get_Nested_Polytropes(R_star,M_core,xi_core,n1=3.0,n2=1.5,Xe=0.7,Ye=0.3)
-        r,rho,u,P,M = nps.joinPolytropes(r1,rho1,M1,K1,n1,r2,rho2,M2,K2,n2)
-
-    else:
-
-        r,rho,u,P,M = nps.Get_Polytrope(M_star,R_star,n1)
-
-    # ===================================================================
-    # this Table is used later to create the SPH particle distribution
-
-    dat = Table([r,rho,u,P,M],names=('r', 'rho', 'u', 'P', 'M'))
-    ascii.write(dat,'PolyStar_cgs.dat')
-
-    if scale_to_units:
-        dat_solar = Table([r/DistUnit,rho/DensUnit,u/E_perMassUnit,P/P_Unit,M/MassUnit],names=('r', 'rho', 'u', 'P', 'M'))
-        ascii.write(dat_solar,'PolyStar_scaled.dat')
-
-else:
-
-    # print np.shape(r), np.shape(rho), np.shape(u), np.shape(P), np.shape(M)
-    dat = Table([r,rho,u,P,M],names=('r', 'rho', 'u', 'P', 'M'))
-    ascii.write(dat,'StarProfile_cgs.dat')
-
-    if scale_to_units:
-        dat_solar = Table([r/DistUnit,rho/DensUnit,u/E_perMassUnit,P/P_Unit,M/MassUnit],names=('r', 'rho', 'u', 'P', 'M'))
-        ascii.write(dat_solar,'StarProfile_scaled.dat')
-
+if scale_to_units:
+    dat_solar = Table([r/DistUnit,rho/DensUnit,u/E_perMassUnit,P/P_Unit,M/MassUnit],names=('r', 'rho', 'u', 'P', 'M'))
+    ascii.write(dat_solar,'StarProfile_scaled.dat')
 
 # ====================================================#
 # Get interpolated profiles to build SPH star
@@ -338,22 +259,23 @@ M_shell_min = 12*P_mass
 print 'Lowest shell mass [solar]', M_shell_min/c.msun
 
 r_min = R_int(M_shell_min)
-print 'r_min =',r_min/c.rsun
+print 'r_min =',r_min/c.rsun    
 
-global r_low
+global r_low    # AVG: 17/04/20 - does this really need to be global?
 
-r_low = r_min
+r_low = r_min 
+
+# AVG: 17/04/20 - Is there a way to test that r_min is sensible? Does it matters?
 
 # ============================================================
 # Obtain positions and masses of SPH particles matching rho(r)
 # AVG: Can we use this twice to make 2 stars?
-# AVG: add a debug flag in the beginning
 xpos,ypos,zpos,mp = sph.getSPHParticles(r_low,P_mass,M_int,rho_int,u_int,R_star,rotshell,gaussRad,Nsigma,dr_sigma,debug=False)
 
 
 # ======================================================
 # Remove gas particles to be replaced by point mass (BH)
-
+# AVG - 17/04/20 - Change "Collapsar" to "makeCore" or so to generalize the function
 if Collapsar:
     R_core = R_int(mBH)
     print ''
@@ -361,7 +283,7 @@ if Collapsar:
     print 'Removing mass to be replaced by BH'
     print R_core/DistUnit, 'Core radius'
     Mc, N_bdry, xpos, ypos, zpos, mp = sph.remove_gasparticles(xpos,ypos,zpos,mp,1.05*R_core)
-    mBH = Mc # this will be the mass of the BH
+    mBH = Mc # this will be the inital mass of the BH
 
 # =============================
 # Get SPH particle's properties
@@ -413,25 +335,21 @@ pos[:,2] = zpos
 # AVG: Checkout: sph.get_particle_properties
 ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = sph.get_particle_properties(mp,pos,pSPH,vSPH,Omega_star,SNe_pm,SNType,M_exp,mBH,rho_int,u_int,R_int)
 
+# AVG
+GAS_PARTICLE = 1
+STAR_PARTICLE = 4
+BLACK_HOLE_PARTICLE = 5
 
 # =============================
 # Add BH and star particles
 # =============================
-# AVG: Add Macro for STAR = 4, BLACK_HOLE = 5, etc.
-if Binary:
+# This is adding a star
+ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
+        sph.add_Particle(STAR_PARTICLE,p_star,v_star,m_star,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
 
-    if addStar:
-        ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
-        sph.add_Particle(4,p_star,v_star,m_star,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
-
-    if addBH:
-        ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
-        sph.add_Particle(5,p_star,v_star,m_star,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
-
-if Collapsar:
-    ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
-    sph.add_Particle(5,pSPH,vSPH,mBH,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
-
+# This is adding a black hole
+ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
+    sph.add_Particle(BLACK_HOLE_PARTICLE,pSPH,vSPH,mBH,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
 
 # =============================
 # Save data into an hdf5 file
