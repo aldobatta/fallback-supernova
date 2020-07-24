@@ -18,6 +18,7 @@ def readsnap(sdir,snum,ptype,
 
     fname,fname_base,fname_ext = check_if_filename_exists(sdir,snum,\
         snapshot_name=snapshot_name,extension=extension,four_char=four_char)
+    print "This is the filename",fname
     if(fname=='NULL'): return {'k':-1}
     if(loud==1): print( 'loading file : '+fname)
 
