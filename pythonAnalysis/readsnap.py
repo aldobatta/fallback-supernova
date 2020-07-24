@@ -162,7 +162,7 @@ def readsnap(sdir,snum,ptype,
     if (ptype==0):
         return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'u':ugas,'rho':rho,'h':hsml,'ne':nume,'nh':numh,'sfr':sfr,'z':metal};
     if (ptype==4):
-        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'z':metal,'age':stellage}
+        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids}
     if (ptype==5) and (skip_bh==0):
         return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'mbh':bhmass,'mdot':bhmdot}
     return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids}
