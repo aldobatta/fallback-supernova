@@ -56,7 +56,7 @@ c = Constants()
 
 # ====================================================#
 # Define Filename
-Filename = 'NS_HE16C_SNf_0_25_a_1_5.hdf5'
+Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5'
 
 # ====================================================#
 # Initial conditions 
@@ -65,15 +65,15 @@ a = 1.5*c.rsun # orbital separation
 e = 0.0         # eccentricity
 
 # BH inside star --------------------
-Collapsar = True  # Creates a BH surrounded by an envelope using a Stellar profile
-mBH = 1*c.msun  # Define initial BH mass (removed from the stellar profile)
+Collapsar = True  # Creates a BH/NS surrounded by an envelope using a Stellar profile
+mBH = 1.33*c.msun  # Define initial BH/NS mass (removed from the stellar profile)
 
 # SN explosion (and radial velocities) --------------------
 SNexplosion = True
 SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
-SNE_frac = 0.25    # explosion energy in terms of binding energy of the star
+SNE_frac = 0.8    # explosion energy in terms of binding energy of the star
 
-M_exp = 0.1*c.msun # Innermost mass where explosion energy is deposited
+M_exp = 0.67*c.msun # Innermost mass where explosion energy is deposited
 
 
 # ==========================================================#
