@@ -7,6 +7,7 @@
 
 # ==========================================================#
 #  Import packages and modules needed
+# Script in python2
 
 import numpy as np
 import scipy.optimize as opt
@@ -47,35 +48,44 @@ class Constants():
         self.eV = 1.6021772e-12
         self.sigmaSB = 5.67051e-5
         self.sigmaT = 6.6524e-25
+        #Alejandro adds
+        self.km = 1e5
 
         # print ("Constants defined...")
         return None
 
-c = Constants()
-# AVG - 07/04/20 - 'c' should be called 'class' so we get class.c instead of c.c for speed of light
+const = Constants()
+# AVG - 07/04/20 - 'c' should be called 'class' so we get class.c instead of const.c for speed of light
 
 # ====================================================#
 # Define Filename
-Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5'
+# Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5' # Template name
+testingFlag = False
+if testingFlag:
+    Filename = 'test.hdf5'
+else:
+    Filename = 'NS_1_4_HE16C_SNf_0_8_Mexp_0_67_smallKick.hdf5'
 
 # ====================================================#
 # Initial conditions 
-M_c = 1.33*c.msun # Define companion's mass (in the case of a non-stellar companion)
-a = 1.5*c.rsun # orbital separation
+M_c = 1.4*const.msun # Define companion's mass (in the case of a non-stellar companion)
+a = 1.5*const.rsun # orbital separation
 e = 0.0         # eccentricity
 
 # BH inside star --------------------
 Collapsar = True  # Creates a BH/NS surrounded by an envelope using a Stellar profile
-mBH = 1.33*c.msun  # Define initial BH/NS mass (removed from the stellar profile)
+mBH = 1.4*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
 
 # SN explosion (and radial velocities) --------------------
 SNexplosion = True
 SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
 SNE_frac = 0.8    # explosion energy in terms of binding energy of the star
 
-M_exp = 0.67*c.msun # Innermost mass where explosion energy is deposited
+M_exp = 0.67*const.msun # Innermost mass where explosion energy is deposited
 
-
+# Natal kick
+useNatalKick = True
+natalKick = np.array([0.0,0.0,35.0])*const.km # kick in km/s
 # ==========================================================#
 # ====================================================#
 #                                                     #
@@ -109,7 +119,7 @@ M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Ro
 
 MapEntireStar = False   # AVG - 07/04/2020 - If true, cut off outer radius if the density is too low on the outer particles
 factor_to_cut = 1.0 # Default is 1.0, i.e. all the radius
-R_out_to_cut = factor_to_cut*c.rsun
+R_out_to_cut = factor_to_cut*const.rsun
 
 if MapEntireStar:
     M_star = M[-1]  # Use entire star for simulation
@@ -129,12 +139,12 @@ else:
 # ======================================================#
 if SNexplosion:
     if SNType == 'Lovegrove':
-         M_exp = 0.5*c.msun # Innermost mass lost in neutrinos
+         M_exp = 0.5*const.msun # Innermost mass lost in neutrinos
 
 # Stellar Rotation --------------------
 RigidbodyRot = True    # Assigns constant angular velocity to particles in SPH star
 if RigidbodyRot:
-    Omega_star = 0.0 * np.sqrt(c.G*M_star/R_star**3)
+    Omega_star = 0.0 * np.sqrt(const.G*M_star/R_star**3)
     # AVG - 07/04/20 - Is Omega_star purposedly set to zero? Delete previously commented lines? 
     
 # Binary --------------------
@@ -174,7 +184,7 @@ if Binary:
     p_star = np.array([orb[4],orb[5],0.0]) # companion's position
     v_star = [orb[6],orb[7],0]             # companion's velocity
     m_star = M_c
-
+    
     # =====================================================================#
     # Define orbital velocity and position of third body (with respect to binary CM)
     # p3 = np.array([orb[8],orb[9],0])   # Relative position to binary CM
@@ -192,9 +202,9 @@ else:
 
 # AVG - 17/04/20 - Making code units
 scale_to_units = True
-DistUnit = c.rsun
-MassUnit = c.msun
-TimeUnit = np.sqrt(DistUnit**3 /(c.G*MassUnit))
+DistUnit = const.rsun
+MassUnit = const.msun
+TimeUnit = np.sqrt(DistUnit**3 /(const.G*MassUnit))
 DensUnit = MassUnit/DistUnit**3
 VelUnit = DistUnit/TimeUnit
 E_perMassUnit = VelUnit**2
@@ -254,12 +264,12 @@ R_int = interp1d(dat['M'],dat['r'],bounds_error=False, fill_value=dat['r'][0])
 # =============================
 
 P_mass = M_star/N_p
-print 'Particle mass [solar]', P_mass/c.msun
+print 'Particle mass [solar]', P_mass/const.msun
 M_shell_min = 12*P_mass
-print 'Lowest shell mass [solar]', M_shell_min/c.msun
+print 'Lowest shell mass [solar]', M_shell_min/const.msun
 
 r_min = R_int(M_shell_min)
-print 'r_min =',r_min/c.rsun    
+print 'r_min =',r_min/const.rsun    
 
 global r_low    # AVG: 17/04/20 - does this really need to be global?
 
@@ -293,7 +303,7 @@ if Collapsar:
 if SNexplosion:
     Min = M[::-1]
     rin = r[::-1]
-    E_bind = integ.cumtrapz(-c.G*Min/rin,Min)
+    E_bind = integ.cumtrapz(-const.G*Min/rin,Min)
     E_bind = E_bind[::-1]
     E_bind = np.append(E_bind,E_bind[-1])
     Eb_int = interp1d(dat['M'],E_bind,bounds_error=False, fill_value=E_bind[-1])
@@ -336,7 +346,7 @@ pos[:,2] = zpos
 ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = sph.get_particle_properties(mp,pos,pSPH,vSPH,Omega_star,SNe_pm,SNType,M_exp,mBH,rho_int,u_int,R_int)
 
 # AVG
-GAS_PARTICLE = 1
+GAS_PARTICLE = 0
 STAR_PARTICLE = 4
 BLACK_HOLE_PARTICLE = 5
 
@@ -350,6 +360,21 @@ ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
 # This is adding a black hole
 ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
     sph.add_Particle(BLACK_HOLE_PARTICLE,pSPH,vSPH,mBH,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
+
+
+# Alejandro: Add natal kick to exploding star (quick hack)
+# Works because there is only one BH particle in the simulation
+if useNatalKick:
+    indexBH = ptype.index(BLACK_HOLE_PARTICLE)
+    print 'The particle type 5 is a black hole. Check particle type:', ptype[indexBH]
+    print 'The orbital velocity is [cm/s]', vx_f[indexBH], vy_f[indexBH], vz_f[indexBH]
+    print 'The natal kick is [cm/s]', natalKick  
+    vx_f[indexBH] = vx_f[indexBH]+natalKick[0]
+    vy_f[indexBH] = vy_f[indexBH]+natalKick[1]
+    vz_f[indexBH] = vz_f[indexBH]+natalKick[2]
+    print 'The new velocity is [cm/s]', vx_f[indexBH], vy_f[indexBH], vz_f[indexBH]
+
+
 
 # =============================
 # Save data into an hdf5 file
