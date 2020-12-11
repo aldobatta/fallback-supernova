@@ -60,11 +60,11 @@ const = Constants()
 # ====================================================#
 # Define Filename
 # Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5' # Template name
-testingFlag = False
+testingFlag = True
 if testingFlag:
     Filename = 'test.hdf5'
 else:
-    Filename = 'NS_1_4_HE16C_SNf_0_8_Mexp_0_67_smallKick.hdf5'
+    Filename = 'NS_1_4_HE16C_SNf_0_8_Mexp_0_67_vxvyvz_plus300.hdf5'
 
 # ====================================================#
 # Initial conditions 
@@ -85,7 +85,7 @@ M_exp = 0.67*const.msun # Innermost mass where explosion energy is deposited
 
 # Natal kick
 useNatalKick = True
-natalKick = np.array([0.0,0.0,35.0])*const.km # kick in km/s
+natalKick = np.array([300.0,300.0,300.0])*const.km # kick in km/s
 # ==========================================================#
 # ====================================================#
 #                                                     #
@@ -108,14 +108,18 @@ N_p_code = Npstring[0]+'0'*N_k+'k'  # used for naming the file
 # -----------------------------------------------------
 # Define stellar profile to be read, M_star and R_star
 # AVG - 07/04/2020 - I deleted options to make polytropes
+
+# AVG - 07/12/2020 - Default when using Heger
 # Readprofile = True
 # Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-# Profilename = '../35OC@presn'
-Readprofile = True
-Profiletype = 'Heger' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-Profilename = './stellarProfiles/HE16C@presn'
+# Profilename = './stellarProfiles/35OC@presn'
+# M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=True)
 
-M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=True)
+# AVG - 07/12/2020 - Testing MESA
+Readprofile = True
+Profiletype = 'MESA' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
+Profilename = './stellarProfiles/6.0_final_profile.data'
+M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=False) 
 
 MapEntireStar = False   # AVG - 07/04/2020 - If true, cut off outer radius if the density is too low on the outer particles
 factor_to_cut = 1.0 # Default is 1.0, i.e. all the radius

@@ -436,6 +436,8 @@ def get_particle_properties(mp,pos,prel,vrel,Omega,SNe_pm,SNType,M_exp,mBH,rho_i
     vz_f = np.zeros(nsph) + np.ones(nsph)*vrel[2] + vtanz + V_rad[:,2]
 
     u_f = u_int(r_f) + u_SN         # internal energy
+    print("Printing u_f:")
+    print(u_f)
     m_f = mp                        # particle's mass
 
     N_ngb = 50
@@ -909,7 +911,7 @@ def readfile(filename,Profiletype = 'Heger',Rotating=True):
     jprofile -> array with specific angular momentum profile
     T -> array with Temperature profile
     p -> array with pressure profile
-    e -> array with specific energy profile
+    e -> array with specific internal energy profile
 
 
     """
@@ -920,23 +922,21 @@ def readfile(filename,Profiletype = 'Heger',Rotating=True):
 
         # print data.colnames
         m = data['mass'][::-1]*c.msun # cell outer total mass
-        # r = Ro*10**(data['logR'][::-1]) # cell outer radius
         r = c.rsun*(data['radius'][::-1]) # cell outer radius
         v = data['mass'][::-1]*0 # cell outer velocity
         rho = 10**(data['logRho'][::-1]) # cell density
         if Rotating == True:
             Omega = data['omega'][::-1] #5*s26_data[:,9] # cell specific angular momentum
-    #         Omegab = np.ones(len(m))*(2*np.pi/(1.0*day))
             jprofile = data['j_rot'][::-1]
         else:
-            Omega = np.ones(len(m))
+            Omega = np.zeros(len(m))
             jprofile = np.ones(len(m))
 
         T = data['temperature'][::-1] # cell temperature
         p = data['pressure'][::-1] # cell pressure
-        e = data['total_energy'][::-1] # cell specific energy
+        e = data['energy'][::-1] # cell specific internal energy
         S = data['entropy'][::-1] # cell specific entropy
-
+        
     if Profiletype == 'Heger':
 
         data = np.genfromtxt(filename)
@@ -945,12 +945,11 @@ def readfile(filename,Profiletype = 'Heger',Rotating=True):
         v = data[:,3] # cell outer velocity
         rho = data[:,4] # cell density
         Omega = data[:,9] #5*s26_data[:,9] # cell specific angular momentum
-#         Omegab = np.ones(len(m))*(2*np.pi/(1.0*day))
         jprofile = (2./3.)*Omega*r**2
 
         T = data[:,5] # cell temperature
         p = data[:,6] # cell pressure
-        e = data[:,7] # cell specific energy
+        e = data[:,7] # cell specific internal energy
         S = data[:,8] # cell specific entropy
 
     if Profiletype == 'ChrisSN':
@@ -981,7 +980,7 @@ def readfile(filename,Profiletype = 'Heger',Rotating=True):
         e = data[:,8] # cell specific energy
         S = data[:,9] # cell specific entropy
 
-
+    print ("Printing: e",e)
 
 
     return m, r ,v ,rho, Omega,jprofile, T, p, e
