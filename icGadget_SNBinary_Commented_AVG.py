@@ -60,31 +60,31 @@ const = Constants()
 # ====================================================#
 # Define Filename
 # Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5' # Template name
-testingFlag = True
+testingFlag = False
 if testingFlag:
     Filename = 'test.hdf5'
 else:
-    Filename = 'NS_1_4_HE16C_SNf_0_8_Mexp_0_67_vxvyvz_plus300.hdf5'
+    Filename = 'NS_1_3_MESA10_SNE_frac_0_6_factor_to_cut_0_5.hdf5'
 
 # ====================================================#
 # Initial conditions 
-M_c = 1.4*const.msun # Define companion's mass (in the case of a non-stellar companion)
-a = 1.5*const.rsun # orbital separation
+M_c = 1.3*const.msun # Define companion's mass (in the case of a non-stellar companion)
+a = 1.4*const.rsun # orbital separation
 e = 0.0         # eccentricity
 
 # BH inside star --------------------
 Collapsar = True  # Creates a BH/NS surrounded by an envelope using a Stellar profile
-mBH = 1.4*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
+mBH = 1.3*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
 
 # SN explosion (and radial velocities) --------------------
 SNexplosion = True
 SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
-SNE_frac = 0.8    # explosion energy in terms of binding energy of the star
+SNE_frac = 0.6    # explosion energy in terms of binding energy of the star
 
 M_exp = 0.67*const.msun # Innermost mass where explosion energy is deposited
 
 # Natal kick
-useNatalKick = True
+useNatalKick = False
 natalKick = np.array([300.0,300.0,300.0])*const.km # kick in km/s
 # ==========================================================#
 # ====================================================#
@@ -118,13 +118,15 @@ N_p_code = Npstring[0]+'0'*N_k+'k'  # used for naming the file
 # AVG - 07/12/2020 - Testing MESA
 Readprofile = True
 Profiletype = 'MESA' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-Profilename = './stellarProfiles/6.0_final_profile.data'
+Profilename = './stellarProfiles/MESA_10_0_final_profile.data'
+print("Using a ", Profiletype, "stellar profile of name:", Profilename)
 M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=False) 
 
 MapEntireStar = False   # AVG - 07/04/2020 - If true, cut off outer radius if the density is too low on the outer particles
-factor_to_cut = 1.0 # Default is 1.0, i.e. all the radius
+factor_to_cut = 0.4 # Default is 1.0, i.e. all the radius
 R_out_to_cut = factor_to_cut*const.rsun
-
+print("MapEntireStar = ", MapEntireStar, "and R_out_to_cut = ",R_out_to_cut)
+    
 if MapEntireStar:
     M_star = M[-1]  # Use entire star for simulation
     R_star = r[-1]  # Use entire star for simulation
@@ -136,6 +138,7 @@ else:
     out_id = sph.find_nearest(r,R_out)
     M_star = M[out_id]
     R_star = r[out_id]
+    print("M_star/Msol = ",M_star/const.msun,"R_star/Rsol = ",R_star/const.rsun)
 
 
 # ======================================================#
@@ -278,6 +281,7 @@ print 'r_min =',r_min/const.rsun
 global r_low    # AVG: 17/04/20 - does this really need to be global?
 
 r_low = r_min 
+print(r_low)
 
 # AVG: 17/04/20 - Is there a way to test that r_min is sensible? Does it matters?
 

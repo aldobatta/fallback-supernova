@@ -980,9 +980,6 @@ def readfile(filename,Profiletype = 'Heger',Rotating=True):
         e = data[:,8] # cell specific energy
         S = data[:,9] # cell specific entropy
 
-    print ("Printing: e",e)
-
-
     return m, r ,v ,rho, Omega,jprofile, T, p, e
 
 
