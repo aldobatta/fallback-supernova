@@ -9,6 +9,11 @@
 #  Import packages and modules needed
 # Script in python2
 
+# 07/01/2021
+# Function modified by Alejandro Vigna-Gomez for the doubleNeutronStar-supernova project
+# https://github.com/avigna/doubleNeutronStar-supernova
+# Original provided by Sophie L. Schroder and likely developed jointly by Aldo Batta and Sophie L. Schroder
+
 import numpy as np
 import scipy.optimize as opt
 import scipy.integrate as integ
@@ -21,8 +26,8 @@ import healpy as hp
 import time
 import matplotlib.pyplot as pl
 
-import SphericalSPHDist_Commented_AVG as sph # Used to build spherical particle distributions
-import BinaryBHOrbit_Commented_AVG as bhb
+import SphericalSPHDist_AVG as sph # Used to build spherical particle distributions
+import BinaryBHOrbit_AVG as bhb
 
 # Time the execution of the program
 start = time.time()
@@ -60,7 +65,7 @@ const = Constants()
 # ====================================================#
 # Define Filename
 # Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5' # Template name
-testingFlag = False
+testingFlag = True
 if testingFlag:
     Filename = 'test.hdf5'
 else:

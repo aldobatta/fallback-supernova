@@ -1,3 +1,8 @@
+# 07/01/2021
+# Function modified by Alejandro Vigna-Gomez for the doubleNeutronStar-supernova project
+# https://github.com/avigna/doubleNeutronStar-supernova
+# Original provided by Sophie L. Schroder and likely developed jointly by Aldo Batta and Sophie L. Schroder
+
 import numpy as np
 
 # ====================================================#
