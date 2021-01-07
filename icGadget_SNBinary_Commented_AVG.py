@@ -64,7 +64,7 @@ testingFlag = False
 if testingFlag:
     Filename = 'test.hdf5'
 else:
-    Filename = 'NS_1_3_MESA10_SNE_frac_0_6_factor_to_cut_0_5.hdf5'
+    Filename = 'NS_1_3_MESA10_SNE_1_5_51_factor_to_cut_0_5.hdf5'
 
 # ====================================================#
 # Initial conditions 
@@ -79,7 +79,9 @@ mBH = 1.3*const.msun  # Define initial BH/NS mass (removed from the stellar prof
 # SN explosion (and radial velocities) --------------------
 SNexplosion = True
 SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
-SNE_frac = 0.6    # explosion energy in terms of binding energy of the star
+useExplosionEnergy = True    # If true, use SNE_ener value for explosion energy
+SNE_ener = 1.5e+51    # explosion energy in erg
+SNE_frac = -1   # explosion energy in terms of binding energy of the star
 
 M_exp = 0.67*const.msun # Innermost mass where explosion energy is deposited
 
@@ -317,11 +319,17 @@ if SNexplosion:
     Eb_int = interp1d(dat['M'],E_bind,bounds_error=False, fill_value=E_bind[-1])
 
     Eb_env = Eb_int(Mc)
-    print Eb_env, "Envelope's Binding energy (outside BH)"
 
-    SNEnergy = SNE_frac*Eb_env  # SN energy
+    if useExplosionEnergy:
+        SNEnergy = SNE_ener    # SN energy
+    else:
+        SNEnergy = SNE_frac*Eb_env  # SN energy
+
     SNe_pm = SNEnergy/M_exp     # SN energy per unit mass
 
+    print Eb_env, "Envelope's Binding energy (outside BH)"
+    print SNEnergy, "Supernova explosion energy [erg]"
+    
     if SNType == 'Lovegrove':
         R_core = R_int(mBH + M_exp)
         print ''
