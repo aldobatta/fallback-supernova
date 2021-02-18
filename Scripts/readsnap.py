@@ -18,7 +18,7 @@ def readsnap(sdir,snum,ptype,
 
     fname,fname_base,fname_ext = check_if_filename_exists(sdir,snum,\
         snapshot_name=snapshot_name,extension=extension,four_char=four_char)
-    print "This is the filename",fname
+#     print("This is the filename",fname)
     if(fname=='NULL'): return {'k':-1}
     if(loud==1): print( 'loading file : '+fname)
 
@@ -47,8 +47,8 @@ def readsnap(sdir,snum,ptype,
     hubble = header_toparse["HubbleParam"]
     flag_stellarage = header_toparse["Flag_StellarAge"]
     flag_metals = header_toparse["Flag_Metals"]
-    print( "npart_file: ",npart)
-    print( "npart_total:",npartTotal)
+#     print( "npart_file: ",npart)
+#     print( "npart_total:",npartTotal)
 
     hinv=1.
     if (h0==1):
@@ -158,15 +158,15 @@ def readsnap(sdir,snum,ptype,
         stellage *= hinv
     if (ptype==5) and (skip_bh==0):
         bhmass *= hinv
-
+    
     file.close();
     if (ptype==0):
-        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'u':ugas,'rho':rho,'h':hsml,'ne':nume,'nh':numh,'sfr':sfr,'z':metal};
+        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'u':ugas,'rho':rho,'h':hsml,'ne':nume,'nh':numh,'sfr':sfr,'z':metal,'time':time};
     if (ptype==4):
-        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids}
+        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'time':time}
     if (ptype==5) and (skip_bh==0):
-        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'mbh':bhmass,'mdot':bhmdot}
-    return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids}
+        return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'mbh':bhmass,'mdot':bhmdot,'time':time}
+    return {'k':1,'p':pos,'v':vel,'m':mass,'id':ids,'time':time}
 
 
 

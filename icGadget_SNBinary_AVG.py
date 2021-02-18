@@ -69,7 +69,7 @@ testingFlag = True
 if testingFlag:
     Filename = 'test.hdf5'
 else:
-    Filename = 'NS_1_3_MESA10_SNE_1_5_51_factor_to_cut_0_5.hdf5'
+    Filename = 'NS_1_3_MESA10_default_Mexp_0_8_SNE_ener_4_0_e51.hdf5'
 
 # ====================================================#
 # Initial conditions 
@@ -79,16 +79,28 @@ e = 0.0         # eccentricity
 
 # BH inside star --------------------
 Collapsar = True  # Creates a BH/NS surrounded by an envelope using a Stellar profile
-mBH = 1.3*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
+mBH = 1.0*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
 
 # SN explosion (and radial velocities) --------------------
 SNexplosion = True
 SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
 useExplosionEnergy = True    # If true, use SNE_ener value for explosion energy
-SNE_ener = 1.5e+51    # explosion energy in erg
+# 0.5000
+# 0.7000
+# 0.9000
+# 1.0000
+# 1.1000
+# 1.3000
+# 1.5000
+# 1.7000
+# 2.0000
+# 2.5000
+# 3.0000
+# 4.0000
+SNE_ener = 4.0e+51    # explosion energy in erg
 SNE_frac = -1   # explosion energy in terms of binding energy of the star
 
-M_exp = 0.67*const.msun # Innermost mass where explosion energy is deposited
+M_exp = 0.8*const.msun # Innermost mass where explosion energy is deposited
 
 # Natal kick
 useNatalKick = False
@@ -112,6 +124,20 @@ Npstring = str(N_p)
 N_k = len(Npstring) - 4
 N_p_code = Npstring[0]+'0'*N_k+'k'  # used for naming the file
 
+# ====================================================#
+# Special treatment of SPH particles and filename
+# ====================================================#
+
+# ====================================================#
+# Apply random rotation to healpix shells
+rotshell = True   # Turn on / off
+
+# ====================================================#
+# Apply Gaussian distribution to shell's radius
+gaussRad = True     # Turn on / off
+dr_sigma = 0.8      # 1 sigma of gaussian Dist will be within 0.1 of shell's width
+Nsigma = 2.0        # Random Gaussian distribution up to 3 Sigma
+
 # -----------------------------------------------------
 # Define stellar profile to be read, M_star and R_star
 # AVG - 07/04/2020 - I deleted options to make polytropes
@@ -130,7 +156,7 @@ print("Using a ", Profiletype, "stellar profile of name:", Profilename)
 M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=False) 
 
 MapEntireStar = False   # AVG - 07/04/2020 - If true, cut off outer radius if the density is too low on the outer particles
-factor_to_cut = 0.4 # Default is 1.0, i.e. all the radius
+factor_to_cut = 0.5 # Default is 1.0, i.e. all the radius
 R_out_to_cut = factor_to_cut*const.rsun
 print("MapEntireStar = ", MapEntireStar, "and R_out_to_cut = ",R_out_to_cut)
     
@@ -229,27 +255,11 @@ if scale_to_units:
     print '\n-------------------------------------------'
     print 'Scaling distances by ', round(DistUnit,sigFigsToPrint), ' cm'
     print 'Scaling masses by ', round(MassUnit,sigFigsToPrint), ' g\n'
+    print 'TimeUnit ', TimeUnit, ' s'    
     print 'G = 1'
 else:
     print '\n-------------------------------------------'
     print 'All final data will be in CGS\n'
-
-
-# ====================================================#
-# Special treatment of SPH particles and filename
-# ====================================================#
-
-# ====================================================#
-# Apply random rotation to healpix shells
-# AVG: Check what healpix is
-rotshell = True   # Turn on / off
-
-# ====================================================#
-# Apply Gaussian distribution to shell's radius
-
-gaussRad = True     # Turn on / off
-dr_sigma = 0.1      # 1 sigma of gaussian Dist will be within 0.1 of shell's width
-Nsigma = 3.0        # Random Gaussian distribution up to 3 Sigma
 
 # ====================================================#
 #  Here we call the functions (actual program)
@@ -382,6 +392,8 @@ ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
 ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f = \
     sph.add_Particle(BLACK_HOLE_PARTICLE,pSPH,vSPH,mBH,ptype,id_f,m_f,x_f,y_f,z_f,vx_f,vy_f,vz_f,u_f,h_f,rho_f)
 
+indexGAS = ptype.index(BLACK_HOLE_PARTICLE)
+print 'N_p, indexGAS:', N_p, ' ',indexGAS
 
 # Alejandro: Add natal kick to exploding star (quick hack)
 # Works because there is only one BH particle in the simulation

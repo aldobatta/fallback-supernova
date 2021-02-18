@@ -10,7 +10,7 @@ from scipy import interpolate
 import scipy.stats as stats
 from astropy.table import Table, Column
 import readsnap as rs
-reload(rs)
+# reload(rs)
 
 G = 6.6726e-08
 Ro = 6.96e10
@@ -51,7 +51,7 @@ def Get_dynamics(filename):
                 ,'LaccZ_star','LaccX_starCM','LaccY_starCM','LaccZ_starCM','LaccX_bhCM' \
                 ,'LaccY_bhCM','LaccZ_bhCM','rp')
     
-    print np.shape(dyn), len(colnames)
+    print(np.shape(dyn), len(colnames))
     dat = Table(dyn,names=colnames)
     
 
@@ -149,7 +149,7 @@ def spincal(path,snap,dyn):                         # path is the directory of t
     
     # bound particles with velocity below escape
     Mbound = sum(data['m'][bound])
-    print 'total bound mass',Mbound
+    print('total bound mass',Mbound)
 
     
     # find amount of already acrreted angular momentum from dyn file
@@ -167,7 +167,7 @@ def spincal(path,snap,dyn):                         # path is the directory of t
     # bound mass within roche lobe
     RLbound = np.where((Vrad*VelUnit<vesc) & (R<r1_lobe))
     MRLbound = sum(data['m'][RLbound])
-    print 'total bound mass in RL',MRLbound
+    print('total bound mass in RL',MRLbound)
 
     #this gives spin:
     Lacc = (np.sqrt(dyn['LaccZ_bh'][idx]**2))*AngMomUnit
@@ -182,8 +182,8 @@ def spincal(path,snap,dyn):                         # path is the directory of t
 
 
 # here is where to put names in..
-path  ='/Users/sophielundschroder/Dropbox/Gadget-data/PistonBinary/gamma11/'
+path  ='/Users/alejandro/Dropbox/Alejandro_CE_SN/Data/NS_MESA10_2021/0129_4/'
 
 dyn = Get_dynamics(path+'dynamics.txt')
-snapnumber = 1000
+snapnumber = 59
 spin,spinRL,MRLbound,Mdirect = spincal(path,snapnumber,dyn)
