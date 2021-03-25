@@ -65,11 +65,11 @@ const = Constants()
 # ====================================================#
 # Define Filename
 # Filename = 'NS_1_33_HE16C_SNf_0_8_Mexp_0_67.hdf5' # Template name
-testingFlag = True
+testingFlag = False
 if testingFlag:
     Filename = 'test.hdf5'
 else:
-    Filename = 'NS_1_3_MESA10_default_Mexp_0_8_SNE_ener_4_0_e51.hdf5'
+    Filename = 'NS_1_3_MESA10_default_Mexp_0_7_SNE_ener_1_5_e51_500K.hdf5'
 
 # ====================================================#
 # Initial conditions 
@@ -79,7 +79,7 @@ e = 0.0         # eccentricity
 
 # BH inside star --------------------
 Collapsar = True  # Creates a BH/NS surrounded by an envelope using a Stellar profile
-mBH = 1.0*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
+mBH = 1.3*const.msun  # Define initial BH/NS mass (removed from the stellar profile)
 
 # SN explosion (and radial velocities) --------------------
 SNexplosion = True
@@ -97,10 +97,10 @@ useExplosionEnergy = True    # If true, use SNE_ener value for explosion energy
 # 2.5000
 # 3.0000
 # 4.0000
-SNE_ener = 4.0e+51    # explosion energy in erg
+SNE_ener = 1.5e+51    # explosion energy in erg
 SNE_frac = -1   # explosion energy in terms of binding energy of the star
 
-M_exp = 0.8*const.msun # Innermost mass where explosion energy is deposited
+M_exp = 0.7*const.msun # Innermost mass where explosion energy is deposited
 
 # Natal kick
 useNatalKick = False
@@ -118,7 +118,7 @@ natalKick = np.array([300.0,300.0,300.0])*const.km # kick in km/s
 # ====================================================#
 # Define number of SPH particles
 
-N_p = int(1e6)  # number of SPH particles
+N_p = int(5e5)  # number of SPH particles
 
 Npstring = str(N_p)
 N_k = len(Npstring) - 4
