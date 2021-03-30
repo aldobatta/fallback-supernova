@@ -26,8 +26,8 @@ import healpy as hp
 import time
 import matplotlib.pyplot as pl
 
-import SphericalSPHDist_AVG as sph # Used to build spherical particle distributions
-import BinaryBHOrbit_AVG as bhb
+import SphericalSPHDist as sph # Used to build spherical particle distributions
+import BinaryBHOrbit as bhb
 
 # Time the execution of the program
 start = time.time()
@@ -85,18 +85,6 @@ mBH = 1.3*const.msun  # Define initial BH/NS mass (removed from the stellar prof
 SNexplosion = True
 SNType = 'Piston'    # Thermal,  Piston or (Lovegrove 2013 -> neutrino mass loss)
 useExplosionEnergy = True    # If true, use SNE_ener value for explosion energy
-# 0.5000
-# 0.7000
-# 0.9000
-# 1.0000
-# 1.1000
-# 1.3000
-# 1.5000
-# 1.7000
-# 2.0000
-# 2.5000
-# 3.0000
-# 4.0000
 SNE_ener = 1.5e+51    # explosion energy in erg
 SNE_frac = -1   # explosion energy in terms of binding energy of the star
 
@@ -151,7 +139,7 @@ Nsigma = 2.0        # Random Gaussian distribution up to 3 Sigma
 # AVG - 07/12/2020 - Testing MESA
 Readprofile = True
 Profiletype = 'MESA' # Accepts Profiletypes: MESA, ChrisIC, ChrisSN, Heger
-Profilename = './stellarProfiles/MESA_10_0_final_profile.data'
+Profilename = '../../stellarProfiles/MESA_10_0_final_profile.data'
 print("Using a ", Profiletype, "stellar profile of name:", Profilename)
 M, r ,v ,rho, Omega, jprofile, T, P, u = sph.readfile(Profilename,Profiletype,Rotating=False) 
 
