@@ -9,6 +9,8 @@ This repo includes scripts to:
 - Analyze the output of the 3D SPH simulations, and
 - Reproduce plots from papers using these results.
 
+More details of the structure of the repo and its contents will be added soon.
+
 ## Contact
 Please email your queries to Aldo Batta (abatta@inaoe.mx) or Alejandro Vigna-Gomez (avignagomez@nbi.ku.dk).
 
@@ -24,6 +26,7 @@ When possible, we would also appreciate if you cite:
 
 ## Author Contributions
 Most scripts here were originally written by Aldo Batta, and modified by Sophie Lund Schrøder and Alejandro Vigna-Gómez. 
+
 This repository was curated by Alejandro Vigna-Gómez.
 
 ## License
