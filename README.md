@@ -22,7 +22,7 @@ If you use any scripts in this repo for results presented in a scientific public
 When possible, we would also appreciate if you cite:
 
 2. Schrøder, S.L., Batta, A. and Ramirez-Ruiz, E., 2018. Black Hole Formation in Fallback Supernova and the Spins of LIGO Sources. The Astrophysical Journal Letters, 862(1), p.L3. DOI: [10.3847/2041-8213/aacf8d](https://iopscience.iop.org/article/10.3847/2041-8213/aacf8d)
-3. Vigna-Gómez, A., et al., in prep. The formation of heavy, radio-quiet neutron star binaries and the origin story of GW190425.
+3. Vigna-Gómez, A., et al., in prep. The formation of heavy, radio-quiet neutron star binaries and the origin of GW190425.
 
 ## Author Contributions
 Most scripts here were originally written by Aldo Batta, and modified by Sophie Lund Schrøder and Alejandro Vigna-Gómez. 
