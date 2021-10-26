@@ -21,7 +21,8 @@ source /users/software/astro/startup.d/modules.sh
 # module unload intelmpi
 # module load mvapich2
 
-module load intelmpi/5.0.2.044 intel/15.0.1
+module load intel
+module load intelmpi
 
 # When compiling remember to use the same environment and modules
 
